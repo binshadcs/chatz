@@ -55,8 +55,27 @@ This repository is structured as a Turborepo monorepo, containing two applicatio
 - **Better organization** for managing multiple apps within a single repository.
 - **Shared packages** for efficient code reuse across applications.
 
-
+## App Screens
+1. **Sign Up page:**
 ![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.05.50%E2%80%AFPM.png?updatedAt=1739436355433)
+
+2. **Sign In page:**
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.05.41%E2%80%AFPM.png?updatedAt=1739436275957)
+
+3. **Home page | Chat list:**
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.03.22%E2%80%AFPM.png?updatedAt=1739436354961)
+
+4. **Public Group chat:**
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.04.27%E2%80%AFPM.png?updatedAt=1739436275341)
+
+5. **User Search with names:**
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.03.58%E2%80%AFPM.png?updatedAt=1739436275552)
+
+6. **Private Chat:**
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.05.27%E2%80%AFPM.png?updatedAt=1739436355245)
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.05.08%E2%80%AFPM.png?updatedAt=1739436275299)
+
+
 ## Conclusion
 This setup allows seamless integration between a Next.js frontend and a WebSocket-powered backend while leveraging Prisma and PostgreSQL for database interactions. Using Turborepo ensures an optimized and scalable development experience.
 
