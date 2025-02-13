@@ -37,8 +37,7 @@ This repository is structured as a Turborepo monorepo, containing two applicatio
 2. **Install Dependencies:**
    ```sh
    npm install
-   ```![Uploading Screenshot 2025-02-13 at 2.05.50 PM.png…]()
-
+   ```
 3. **Set Up Environment Variables:**
    - Navigate to `apps/web` and rename `example.env` to `.env`.
    - Update the `.env` file with the required configurations.
@@ -57,7 +56,7 @@ This repository is structured as a Turborepo monorepo, containing two applicatio
 - **Shared packages** for efficient code reuse across applications.
 
 
-
+![Project Structure](https://ik.imagekit.io/binshadcs/alps/wep/Screenshot%202025-02-13%20at%202.05.50%E2%80%AFPM.png?updatedAt=1739436355433)
 ## Conclusion
 This setup allows seamless integration between a Next.js frontend and a WebSocket-powered backend while leveraging Prisma and PostgreSQL for database interactions. Using Turborepo ensures an optimized and scalable development experience.
 
