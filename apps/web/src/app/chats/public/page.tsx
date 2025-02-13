@@ -1,56 +1,105 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-const messages = [
-  {
-    id: 1,
-    sender: "John Doe",
-    text: "Hey, how are you?",
-    timestamp: "10:30 AM",
-  },
-  {
-    id: 2,
-    sender: "You",
-    text: "I’m good, thanks! How about you?",
-    timestamp: "10:31 AM",
-  },
-  {
-    id: 3,
-    sender: "John Doe",
-    text: "Doing great! Just finished a project.",
-    timestamp: "10:32 AM",
-  },
-  {
-    id: 4,
-    sender: "You",
-    text: "That’s awesome! What’s next?",
-    timestamp: "10:33 AM",
-  },
-];
+interface Message {
+  id: string;
+  sender: string;
+  text: string;
+  timestamp: string;
+}
 
-export default function ChatPage({ params }: { params: { userId: number } }) {
-  const { userId } = params; // Access the dynamic userId from the URL
+export default function ChatPage() {
+  const { data: session } = useSession(); // Get the logged-in user's session
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const router = useRouter(); // Initialize useRouter
+  const ws = useRef<WebSocket | null>(null);
+  const router = useRouter();
 
-  const handleSendMessage = (e: any) => {
+  // Connect to the WebSocket server
+  useEffect(() => {
+    if (!session) return; // Only connect if the user is logged in
+
+    // Initialize WebSocket connection
+    ws.current = new WebSocket(`ws://localhost:8080?userId=${session.user?.id}`);
+
+    ws.current.onopen = () => {
+      console.log("WebSocket connection established");
+    };
+
+    ws.current.onmessage = (event) => {
+      const messageData = JSON.parse(event.data);
+      console.log("Received message:", messageData);
+
+      // Add the new message to the messages list
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now().toString(),
+          sender: messageData.sender,
+          text: messageData.text,
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    // Cleanup on component unmount
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [session]);
+
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newMessage.trim()) {
-      console.log("Sending message:", newMessage);
+    if (newMessage.trim() && ws.current && session?.user) {
+      const messageData = {
+        type: "group",
+        sender: session.user.name || "Anonymous",
+        text: newMessage,
+      };
+  
+      // Send the message via WebSocket
+      ws.current.send(JSON.stringify(messageData));
+  
+      // Manually add the message to state
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now().toString(),
+          sender: session.user!.name || "Anonymous",
+          text: newMessage,
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ]);
+  
+      // Clear the input field
       setNewMessage("");
     }
   };
 
-  const handleKeyDown = (e: any) => {
+  // Handle Enter key press
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevent default behavior (e.g., new line)
-      handleSendMessage(e); // Send the message
+      e.preventDefault();
+      handleSendMessage(e);
     }
   };
 
+  // Navigate back to the chat list
   const handleBackToChatList = () => {
-    router.push("/"); // Navigate back to the Chat List Page
+    router.push("/");
   };
 
   return (
@@ -82,22 +131,27 @@ export default function ChatPage({ params }: { params: { userId: number } }) {
             <p className="text-sm text-gray-500">Online</p>
           </div>
         </div>
+
+        {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex ${
-                message.sender === "You" ? "justify-end" : "justify-start"
+                message.sender === session?.user?.name
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`max-w-[70%] p-4 rounded-lg ${
-                  message.sender === "You"
+                  message.sender === session?.user?.name
                     ? "bg-blue-600 text-white"
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                <p className="text-sm">{message.text}</p>
+                <p className="text-sm font-extralight text-gray-500">{message.sender}</p>
+                <p className="text-base">{message.text}</p>
                 <p className="text-xs mt-1 text-right text-gray-400">
                   {message.timestamp}
                 </p>
@@ -105,6 +159,8 @@ export default function ChatPage({ params }: { params: { userId: number } }) {
             </div>
           ))}
         </div>
+
+        {/* Message Input */}
         <div className="p-6 border-t">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <input
@@ -112,7 +168,7 @@ export default function ChatPage({ params }: { params: { userId: number } }) {
               placeholder="Type a message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onKeyDown={handleKeyDown} // Add keydown event handler
+              onKeyDown={handleKeyDown}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <button
