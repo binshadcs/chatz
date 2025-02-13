@@ -1,0 +1,23 @@
+{
+  "name": "websocketapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" : "npx tsc -b && node ./dist/index.js",
+    "build" : "npx tsc -b",
+    "start" : "node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@types/express": "^5.0.0",
+    "@types/ws": "^8.5.14",
+    "express": "^4.21.2",
+    "typescript": "^5.7.3",
+    "ws": "^8.18.0"
+  }
+}
