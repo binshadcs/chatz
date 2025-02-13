@@ -32,18 +32,21 @@ export default function ChatPage() {
     ws.current.onmessage = (event) => {
       const messageData = JSON.parse(event.data);
       console.log("Received message:", messageData);
-
-      // Add the new message to the messages list
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          id: Date.now().toString(),
-          sender: messageData.sender,
-          text: messageData.text,
-          timestamp: new Date().toLocaleTimeString(),
-        },
-      ]);
+    
+      // Prevent duplicate messages by ensuring it's not the one sent by this client
+      if (messageData.sender !== session?.user?.name) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          {
+            id: Date.now().toString(),
+            sender: messageData.sender,
+            text: messageData.text,
+            timestamp: new Date().toLocaleTimeString(),
+          },
+        ]);
+      }
     };
+    
 
     ws.current.onclose = () => {
       console.log("WebSocket connection closed");

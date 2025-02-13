@@ -1,31 +1,8 @@
 "use client";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const chats = [
-  {
-    id: 1,
-    name: "John Doe",
-    lastMessage: "Hey, how are you?",
-    timestamp: "10:30 AM",
-    unreadCount: 2,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    lastMessage: "See you later!",
-    timestamp: "Yesterday",
-    unreadCount: 0,
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    lastMessage: "Can we reschedule?",
-    timestamp: "2 days ago",
-    unreadCount: 1,
-  },
-];
 const publicGroup = {
   id: 0,
   name: "Public Chat Group",
@@ -38,6 +15,37 @@ export default function Chats() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredChats, setFilteredChats] = useState<any[]>([]);
+  const [chats, setChats] = useState<any[]>([]); // Store previous chats
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (!searchQuery) {
+        setFilteredChats([]);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/users/search?name=${encodeURIComponent(searchQuery)}`);
+        const data = await res.json();
+
+        setFilteredChats(
+          data.map((user: any) => ({
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`,
+            lastMessage: "Say hello!",
+            timestamp: "Just now",
+            unreadCount: 0,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    const delayDebounce = setTimeout(fetchUsers, 300); // Debounce API call
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
 
   if (status === "loading") {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -47,10 +55,6 @@ export default function Chats() {
     router.push("/signin");
     return null;
   }
-
-  const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
@@ -73,7 +77,7 @@ export default function Chats() {
         <div className="p-6 border-b">
           <input
             type="text"
-            placeholder="Search chats..."
+            placeholder="Search users..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -111,38 +115,29 @@ export default function Chats() {
           {/* Divider */}
           <div className="border-t my-4"></div>
 
-          {/* Filtered Chats */}
-          {filteredChats.length > 0 ? (
-            filteredChats.map((chat) => (
-              <div
-                key={chat.id}
-                className="flex items-center p-4 hover:bg-gray-50 rounded-lg transition duration-200 cursor-pointer"
-                onClick={() => router.push(`/chats/private/${chat.id}`)}
-              >
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                    <span className="text-blue-600 font-bold">{chat.name[0]}</span>
-                  </div>
-                </div>
-                <div className="ml-4 flex-1">
-                  <div className="flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800">{chat.name}</h3>
-                    <span className="text-sm text-gray-500">{chat.timestamp}</span>
-                  </div>
-                  <div className="flex justify-between items-center mt-1">
-                    <p className="text-sm text-gray-600">{chat.lastMessage}</p>
-                    {chat.unreadCount > 0 && (
-                      <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
-                        {chat.unreadCount}
-                      </span>
-                    )}
-                  </div>
+          {/* Chats (Previous & Search Results) */}
+          {filteredChats.map((chat) => (
+            <div
+              key={chat.id}
+              className="flex items-center p-4 hover:bg-gray-50 rounded-lg transition duration-200 cursor-pointer"
+              onClick={() => router.push(`/chats/private/${chat.id}?name=${encodeURIComponent(chat.name)}`)}
+            >
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-bold">{chat.name[0]}</span>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-600">No chats found.</p>
-          )}
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-800">{chat.name}</h3>
+                  <span className="text-sm text-gray-500">{chat.timestamp}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <p className="text-sm text-gray-600">{chat.lastMessage}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
