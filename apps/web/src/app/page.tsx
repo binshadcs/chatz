@@ -3,6 +3,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 
+
 const publicGroup = {
   id: 0,
   name: "Public Chat Group",
@@ -16,7 +17,6 @@ export default function Chats() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredChats, setFilteredChats] = useState<any[]>([]);
-  const [chats, setChats] = useState<any[]>([]); // Store previous chats
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -43,7 +43,7 @@ export default function Chats() {
       }
     };
 
-    const delayDebounce = setTimeout(fetchUsers, 300); // Debounce API call
+    const delayDebounce = setTimeout(fetchUsers, 300);
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
 
@@ -59,7 +59,6 @@ export default function Chats() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
       <div className="bg-white rounded-lg shadow-lg h-[calc(100vh-48px)] flex flex-col">
-        {/* Header */}
         <div className="p-6 border-b flex justify-between items-center">
           <h2 className="text-3xl font-bold text-gray-800">Chats</h2>
           <div className="flex items-center space-x-4">
@@ -73,7 +72,6 @@ export default function Chats() {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="p-6 border-b">
           <input
             type="text"
@@ -84,9 +82,7 @@ export default function Chats() {
           />
         </div>
 
-        {/* Chat List */}
         <div className="flex-1 overflow-y-auto p-6">
-          {/* Public Chat Group */}
           <div
             onClick={() => router.push("/chats/public")}
             className="flex items-center p-4 hover:bg-gray-50 rounded-lg transition duration-200 cursor-pointer"
@@ -112,10 +108,7 @@ export default function Chats() {
             </div>
           </div>
 
-          {/* Divider */}
           <div className="border-t my-4"></div>
-
-          {/* Chats (Previous & Search Results) */}
           {filteredChats.map((chat) => (
             <div
               key={chat.id}

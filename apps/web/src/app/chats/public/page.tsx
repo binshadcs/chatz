@@ -12,17 +12,15 @@ interface Message {
 }
 
 export default function ChatPage() {
-  const { data: session } = useSession(); // Get the logged-in user's session
+  const { data: session } = useSession();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const ws = useRef<WebSocket | null>(null);
   const router = useRouter();
 
-  // Connect to the WebSocket server
   useEffect(() => {
-    if (!session) return; // Only connect if the user is logged in
+    if (!session) return;
 
-    // Initialize WebSocket connection
     ws.current = new WebSocket(`ws://localhost:8080?userId=${session.user?.id}`);
 
     ws.current.onopen = () => {
@@ -33,7 +31,6 @@ export default function ChatPage() {
       const messageData = JSON.parse(event.data);
       console.log("Received message:", messageData);
     
-      // Prevent duplicate messages by ensuring it's not the one sent by this client
       if (messageData.sender !== session?.user?.name) {
         setMessages((prevMessages) => [
           ...prevMessages,
@@ -56,7 +53,6 @@ export default function ChatPage() {
       console.error("WebSocket error:", error);
     };
 
-    // Cleanup on component unmount
     return () => {
       if (ws.current) {
         ws.current.close();
@@ -73,10 +69,8 @@ export default function ChatPage() {
         text: newMessage,
       };
   
-      // Send the message via WebSocket
       ws.current.send(JSON.stringify(messageData));
   
-      // Manually add the message to state
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -87,12 +81,10 @@ export default function ChatPage() {
         },
       ]);
   
-      // Clear the input field
       setNewMessage("");
     }
   };
 
-  // Handle Enter key press
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -100,7 +92,6 @@ export default function ChatPage() {
     }
   };
 
-  // Navigate back to the chat list
   const handleBackToChatList = () => {
     router.push("/");
   };
@@ -108,7 +99,6 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
       <div className="bg-white rounded-lg shadow-lg h-[calc(100vh-48px)] flex flex-col">
-        {/* Header with Back Button */}
         <div className="p-6 border-b flex items-center">
           <button
             onClick={handleBackToChatList}
@@ -135,7 +125,6 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map((message) => (
             <div
@@ -163,7 +152,6 @@ export default function ChatPage() {
           ))}
         </div>
 
-        {/* Message Input */}
         <div className="p-6 border-t">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <input

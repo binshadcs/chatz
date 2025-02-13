@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
   try {
-    // Get the name query parameter correctly
     const name = req.nextUrl.searchParams.get("name");
 
     if (!name || typeof name !== "string") {
@@ -18,7 +17,7 @@ export async function GET(req: NextRequest) {
     const users = await prisma.user.findMany({
       where: {
         OR: [
-          { firstName: { contains: name, mode: "insensitive" } }, // Case-insensitive search
+          { firstName: { contains: name, mode: "insensitive" } }, 
           { lastName: { contains: name, mode: "insensitive" } },
         ],
       },
@@ -26,7 +25,7 @@ export async function GET(req: NextRequest) {
         id: true,
         firstName: true,
         lastName: true,
-        email: true, // Include email if needed
+        email: true, 
       },
     });
 

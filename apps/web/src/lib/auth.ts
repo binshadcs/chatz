@@ -39,7 +39,7 @@ export const NEXT_AUTH: NextAuthOptions = {
           }
 
           return {
-            id: user.id.toString(), // Ensure ID is a string
+            id: user.id.toString(),
             name: user.firstName,
             email: user.email,
           };
@@ -53,19 +53,19 @@ export const NEXT_AUTH: NextAuthOptions = {
   callbacks: {
     jwt: ({ token, user }) => {
       if (user) {
-        token.uid = user.id; // Set the user ID in the token
+        token.uid = user.id;
       }
       return token;
     },
     session: ({ session, token }) => {
       if (session.user) {
-        session.user.id = token.uid; // Add the user ID to the session
+        session.user.id = token.uid;
       }
       return session;
     },
   },
   pages: {
-    signIn: "/signin", // Custom sign-in page
+    signIn: "/signin",
   },
-  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your environment variables
+  secret: process.env.NEXTAUTH_SECRET,
 };

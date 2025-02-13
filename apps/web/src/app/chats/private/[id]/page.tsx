@@ -12,7 +12,7 @@ interface Message {
 }
 
 export default function ChatPage({ params }: { params: { userId: string } }) {
-  const { userId } = params; // Receiver's ID
+  const { userId } = params;
   const searchParams = useSearchParams();
   const name = searchParams.get("name") || "Unknown";
   const router = useRouter();
@@ -23,7 +23,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom of messages
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -38,7 +37,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
       return;
     }
 
-    // Connect to WebSocket server with user ID
     const ws = new WebSocket(`ws://localhost:8080?userId=${session.user.id}`);
 
     ws.onopen = () => {
@@ -70,7 +68,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
 
     setWsConnection(ws);
 
-    // Clean up on unmount
     return () => {
       ws.close();
     };
@@ -85,7 +82,7 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
       type: "group",
       senderId: session.user!.id,
       text: newMessage,
-      receiverId: userId, // Include receiver ID even though server broadcasts to all
+      receiverId: userId,
       timestamp: new Date().toISOString()
     };
 
@@ -114,7 +111,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 p-6">
       <div className="bg-white rounded-lg shadow-lg h-[calc(100vh-48px)] flex flex-col">
-        {/* Header */}
         <div className="p-6 border-b flex items-center">
           <button
             onClick={() => router.push("/")}
@@ -140,8 +136,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
             <p className="text-sm text-gray-500">Online</p>
           </div>
         </div>
-
-        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {messages.map((message) => (
             <div
@@ -165,7 +159,6 @@ export default function ChatPage({ params }: { params: { userId: string } }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input */}
         <div className="p-6 border-t">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <input

@@ -14,26 +14,21 @@ export default function SignUp() {
   const [rePassword, setRePassword] = useState("");
 
   const validateForm = () => {
-    // Check if all fields are filled
     if (!firstName || !lastName || !email || !password || !rePassword) {
       toast.error("All fields are required.");
       return false;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       toast.error("Please enter a valid email address.");
       return false;
     }
 
-    // Check if passwords match
     if (password !== rePassword) {
       toast.error("Passwords do not match.");
       return false;
     }
-
-    // Validate password strength (e.g., minimum 8 characters, at least one special character)
     const passwordRegex =
       /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
     if (!passwordRegex.test(password)) {
@@ -46,11 +41,11 @@ export default function SignUp() {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+  const handleSubmit = async (e:any) => {
+    e.preventDefault();
 
     if (!validateForm()) {
-      return; // Stop if validation fails
+      return; 
     }
 
     try {
