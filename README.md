@@ -1,16 +1,40 @@
-# Turborepo starter
+# Turborepo Starter
 
 This Turborepo starter is maintained by the Turborepo core team.
 
-## Using this example
+## Setup Instructions
 
-Run the following command:
+To get started, clone the project and install dependencies:
 
 ```sh
-npx create-turbo@latest
+# Clone the repository
+git clone https://github.com/binshadcs/chatz.git
+
+# Navigate to the project directory
+cd chatz
+
+# Install dependencies
+npm install
+
+# Move into the web app directory
+cd apps/web
+
+# Rename the environment file
+mv example.env .env
+
+# Update the .env file with your configurations
+
+# Generate Prisma client code
+npx prisma generate
+
+# Move back to the root directory
+cd ../..
+
+# Start the development server
+npm run dev
 ```
 
-## What's inside?
+## What's Inside?
 
 This Turborepo includes the following packages/apps:
 
@@ -26,7 +50,7 @@ Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
 
 ### Utilities
 
-This Turborepo has some additional tools already setup for you:
+This Turborepo has some additional tools already set up for you:
 
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
 - [ESLint](https://eslint.org/) for code linting
@@ -36,8 +60,8 @@ This Turborepo has some additional tools already setup for you:
 
 To build all apps and packages, run the following command:
 
-```
-cd my-turborepo
+```sh
+cd chatz
 pnpm build
 ```
 
@@ -45,8 +69,8 @@ pnpm build
 
 To develop all apps and packages, run the following command:
 
-```
-cd my-turborepo
+```sh
+cd chatz
 pnpm dev
 ```
 
@@ -59,8 +83,8 @@ Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo
 
 By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
 
-```
-cd my-turborepo
+```sh
+cd chatz
 npx turbo login
 ```
 
@@ -68,7 +92,7 @@ This will authenticate the Turborepo CLI with your [Vercel account](https://verc
 
 Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
 
-```
+```sh
 npx turbo link
 ```
 
